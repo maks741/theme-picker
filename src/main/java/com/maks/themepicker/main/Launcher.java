@@ -1,9 +1,9 @@
-package com.maks.themepicker;
+package com.maks.themepicker.main;
 
 import javafx.application.Application;
 
 public class Launcher {
     public static void main(String[] args) {
-        Application.launch(HelloApplication.class, args);
+        Application.launch(Start.class, args);
     }
 }
