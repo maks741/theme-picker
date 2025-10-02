@@ -3,6 +3,7 @@ package com.maks.themepicker.main;
 import com.maks.themepicker.model.Wallpaper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -104,7 +105,7 @@ public class Start extends Application {
         int count = 0;
         while (count < numberOfThemes) {
             wallpaper = blockingQueue.take();
-            hBox.getChildren().add(wallpaper.wallpaperContainer());
+            hBox.getChildren().add(wallpaper.view());
             wallpapers.add(wallpaper);
             count++;
         }
@@ -158,25 +159,27 @@ public class Start extends Application {
     }
 
     private void updateSelection(int newIndex) {
-        deselectOld();
-        selectNew(newIndex);
+        Timeline deselectOld = deselectOld();
+        Timeline selectNew = selectNew(newIndex);
+
+        new ParallelTransition(deselectOld, selectNew).play();
 
         selectedIndex = newIndex;
     }
 
     private void instantSelectFirst() {
-        selectNew(0, Duration.millis(1));
+        selectNew(0, Duration.millis(1)).play();
     }
 
-    private void selectNew(int newIndex) {
-        selectNew(newIndex, animationDuration);
+    private Timeline selectNew(int newIndex) {
+        return selectNew(newIndex, animationDuration);
     }
 
-    private void selectNew(int newIndex, Duration animationDuration) {
+    private Timeline selectNew(int newIndex, Duration animationDuration) {
         Rectangle newClip = wallpapers.get(newIndex).clip();
         ColorAdjust newEffect = wallpapers.get(newIndex).effect();
 
-        Timeline newAnim = new Timeline(
+        return new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(newClip.widthProperty(), newClip.getWidth()),
                         new KeyValue(newClip.xProperty(), newClip.getX()),
@@ -188,14 +191,13 @@ public class Start extends Application {
                         new KeyValue(newEffect.brightnessProperty(), 0)
                 )
         );
-        newAnim.play();
     }
 
-    private void deselectOld() {
+    private Timeline deselectOld() {
         Rectangle oldClip = wallpapers.get(selectedIndex).clip();
         ColorAdjust oldEffect = wallpapers.get(selectedIndex).effect();
 
-        Timeline oldAnim = new Timeline(
+        return new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(oldClip.widthProperty(), oldClip.getWidth()),
                         new KeyValue(oldClip.xProperty(), oldClip.getX()),
@@ -207,7 +209,6 @@ public class Start extends Application {
                         new KeyValue(oldEffect.brightnessProperty(), -0.5)
                 )
         );
-        oldAnim.play();
     }
 
     private void exit() {
