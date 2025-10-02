@@ -6,6 +6,6 @@ import javafx.scene.shape.Rectangle;
 
 public class NullWallpaper extends Wallpaper {
     public NullWallpaper() {
-        super(new ImageView(), new Rectangle(), new ColorAdjust());
+        super(new ImageView(), "", new Rectangle(), new ColorAdjust());
     }
 }

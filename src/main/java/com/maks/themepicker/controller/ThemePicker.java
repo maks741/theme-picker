@@ -1,8 +1,8 @@
 package com.maks.themepicker.controller;
 
 import com.maks.themepicker.components.WallpaperBox;
-import com.maks.themepicker.model.Wallpaper;
 import com.maks.themepicker.model.NullWallpaper;
+import com.maks.themepicker.model.Wallpaper;
 import com.maks.themepicker.service.WallpaperService;
 import com.maks.themepicker.utils.Config;
 import javafx.animation.KeyFrame;
@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.BlockingQueue;
@@ -46,6 +47,10 @@ public class ThemePicker implements Initializable {
                             updateSelection(selectedIndex - 1);
                         }
                     }
+                    case ENTER -> {
+                        Wallpaper selectedWallpaper = wallpapers.get(selectedIndex);
+                        setTheme(selectedWallpaper.themeName());
+                    }
                     case ESCAPE -> exit();
                 }
             })
@@ -68,6 +73,20 @@ public class ThemePicker implements Initializable {
         }
 
         instantSelectFirst();
+    }
+
+    private void setTheme(String newTheme) {
+        String command = "sleep 0.5 && set-theme " + newTheme;
+        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+        processBuilder.environment().putAll(System.getenv());
+
+        try {
+            processBuilder.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.exit(0);
     }
 
     private void updateSelection(int newIndex) {

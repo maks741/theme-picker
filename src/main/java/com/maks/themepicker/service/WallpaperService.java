@@ -29,9 +29,11 @@ public class WallpaperService {
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(initialNumberOfThreads)) {
             try (Stream<Path> themeDirs = Files.list(ResourceUtils.themesDirPath())) {
-                themeDirs
-                        .map(themeDir -> themeDir.resolve("wallpaper"))
-                        .forEach(path -> executorService.submit(() -> loadWallpaper(path, blockingQueue)));
+                themeDirs.forEach(themeDir -> {
+                    String themeName = themeDir.getFileName().toString();
+                    Path wallpaperPath = themeDir.resolve("wallpaper");
+                    executorService.submit(() -> loadWallpaper(wallpaperPath, themeName, blockingQueue));
+                });
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -42,7 +44,7 @@ public class WallpaperService {
         return blockingQueue;
     }
 
-    private void loadWallpaper(Path path, BlockingQueue<Wallpaper> blockingQueue) {
+    private void loadWallpaper(Path path, String themeName, BlockingQueue<Wallpaper> blockingQueue) {
         ImageView imageView = new ImageView(new WallpaperImage(path));
         imageView.setFitHeight(Config.imageHeight());
         imageView.setFitWidth(Config.imageWidth());
@@ -55,7 +57,7 @@ public class WallpaperService {
         effect.setBrightness(-0.5);
         imageView.setEffect(effect);
 
-        Wallpaper wallpaper = new Wallpaper(imageView, clip, effect);
+        Wallpaper wallpaper = new Wallpaper(imageView, themeName, clip, effect);
         wallpaper.minWidthProperty().bind(clip.widthProperty());
 
         try {
