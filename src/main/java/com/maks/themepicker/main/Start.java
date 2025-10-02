@@ -4,7 +4,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.effect.ColorAdjust;
@@ -25,6 +24,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class Start extends Application {
@@ -43,7 +46,7 @@ public class Start extends Application {
     double selectedImageWidth = imageWidth * 0.5;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
         Path currentWallpaperPath = Paths.get(System.getProperty("user.home"), ".config", "wallpapers", "current");
         ImageView currentWallpaper = new ImageView(new Image(currentWallpaperPath.toUri().toString(), 640, 360, false, true));
         currentWallpaper.setFitWidth(screenWidth);
@@ -77,47 +80,33 @@ public class Start extends Application {
         hBox.setPrefHeight(screenHeight);
         hBox.setAlignment(Pos.CENTER);
 
-        Task<List<StackPane>> loadWallpapersTask = new Task<>() {
-            @Override
-            protected List<StackPane> call() {
-                List<StackPane> wrappers = new ArrayList<>();
+        int numberOfThemes;
+        try (Stream<Path> themeDirs = Files.list(Paths.get(System.getProperty("user.home"), ".config", "themes"))) {
+            numberOfThemes = (int) themeDirs.count();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-                try (Stream<Path> themeDirs = Files.list(Paths.get(System.getProperty("user.home"), ".config", "themes"))) {
-                    themeDirs.map(themeDir -> themeDir.resolve("wallpaper"))
-                            .forEach(path -> {
-                                ImageView iv = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
-                                iv.setFitHeight(imageHeight);
-                                iv.setPreserveRatio(true);
+        BlockingQueue<StackPane> blockingQueue = new ArrayBlockingQueue<>(numberOfThemes);
 
-                                Rectangle clip = new Rectangle(croppedImageWidth, imageHeight);
-                                clip.setX((imageWidth - croppedImageWidth) / 2.0);
-                                iv.setClip(clip);
-
-                                ColorAdjust effect = new ColorAdjust();
-                                effect.setBrightness(-0.5);
-                                iv.setEffect(effect);
-
-                                StackPane wrapper = new StackPane(iv);
-                                wrapper.minWidthProperty().bind(clip.widthProperty());
-                                wrapper.prefWidthProperty().bind(clip.widthProperty());
-                                wrapper.maxWidthProperty().bind(clip.widthProperty());
-
-                                clips.add(clip);
-                                effects.add(effect);
-                                wrappers.add(wrapper);
-                            });
-
-                    return wrappers;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+        try (ExecutorService executorService = Executors.newFixedThreadPool(numberOfThemes)) {
+            try (Stream<Path> themeDirs = Files.list(Paths.get(System.getProperty("user.home"), ".config", "themes"))) {
+                themeDirs
+                        .map(themeDir -> themeDir.resolve("wallpaper"))
+                        .forEach(path -> executorService.submit(() -> loadWallpaper(path, blockingQueue)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        };
-        loadWallpapersTask.setOnSucceeded(e -> {
-            loadWallpapersTask.getValue().forEach(hBox.getChildren()::add);
-            instantSelectFirst();
-        });
-        new Thread(loadWallpapersTask).start();
+        }
+
+        StackPane wrapper;
+        int count = 0;
+        while (count < numberOfThemes) {
+            wrapper = blockingQueue.take();
+            hBox.getChildren().add(wrapper);
+            count++;
+        }
+        instantSelectFirst();
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -134,6 +123,34 @@ public class Start extends Application {
                 case ESCAPE -> exit();
             }
         });
+    }
+
+    private void loadWallpaper(Path path, BlockingQueue<StackPane> blockingQueue) {
+        ImageView iv = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
+        iv.setFitHeight(imageHeight);
+        iv.setPreserveRatio(true);
+
+        Rectangle clip = new Rectangle(croppedImageWidth, imageHeight);
+        clip.setX((imageWidth - croppedImageWidth) / 2.0);
+        iv.setClip(clip);
+
+        ColorAdjust effect = new ColorAdjust();
+        effect.setBrightness(-0.5);
+        iv.setEffect(effect);
+
+        StackPane wrapper = new StackPane(iv);
+        wrapper.minWidthProperty().bind(clip.widthProperty());
+        wrapper.prefWidthProperty().bind(clip.widthProperty());
+        wrapper.maxWidthProperty().bind(clip.widthProperty());
+
+        clips.add(clip);
+        effects.add(effect);
+
+        try {
+            blockingQueue.put(wrapper);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void updateSelection(int newIndex) {
