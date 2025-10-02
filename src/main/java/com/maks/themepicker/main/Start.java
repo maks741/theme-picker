@@ -1,5 +1,6 @@
 package com.maks.themepicker.main;
 
+import com.maks.themepicker.model.Wallpaper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -32,8 +33,7 @@ import java.util.stream.Stream;
 
 public class Start extends Application {
     private int selectedIndex = 0;
-    private final List<Rectangle> clips = new ArrayList<>();
-    private final List<ColorAdjust> effects = new ArrayList<>();
+    private final List<Wallpaper> wallpapers = new ArrayList<>();
     private final Duration animationDuration = Duration.millis(100);
 
     Screen screen = Screen.getPrimary();
@@ -87,9 +87,10 @@ public class Start extends Application {
             throw new RuntimeException(e);
         }
 
-        BlockingQueue<StackPane> blockingQueue = new ArrayBlockingQueue<>(numberOfThemes);
+        BlockingQueue<Wallpaper> blockingQueue = new ArrayBlockingQueue<>(numberOfThemes);
 
-        try (ExecutorService executorService = Executors.newFixedThreadPool(numberOfThemes)) {
+        int processors = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executorService = Executors.newFixedThreadPool(Math.min(processors, numberOfThemes))) {
             try (Stream<Path> themeDirs = Files.list(Paths.get(System.getProperty("user.home"), ".config", "themes"))) {
                 themeDirs
                         .map(themeDir -> themeDir.resolve("wallpaper"))
@@ -99,11 +100,12 @@ public class Start extends Application {
             }
         }
 
-        StackPane wrapper;
+        Wallpaper wallpaper;
         int count = 0;
         while (count < numberOfThemes) {
-            wrapper = blockingQueue.take();
-            hBox.getChildren().add(wrapper);
+            wallpaper = blockingQueue.take();
+            hBox.getChildren().add(wallpaper.wallpaperContainer());
+            wallpapers.add(wallpaper);
             count++;
         }
         instantSelectFirst();
@@ -111,7 +113,7 @@ public class Start extends Application {
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case RIGHT -> {
-                    if (selectedIndex < clips.size() - 1) {
+                    if (selectedIndex < (numberOfThemes - 1)) {
                         updateSelection(selectedIndex + 1);
                     }
                 }
@@ -125,7 +127,7 @@ public class Start extends Application {
         });
     }
 
-    private void loadWallpaper(Path path, BlockingQueue<StackPane> blockingQueue) {
+    private void loadWallpaper(Path path, BlockingQueue<Wallpaper> blockingQueue) {
         ImageView iv = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
         iv.setFitHeight(imageHeight);
         iv.setPreserveRatio(true);
@@ -143,11 +145,13 @@ public class Start extends Application {
         wrapper.prefWidthProperty().bind(clip.widthProperty());
         wrapper.maxWidthProperty().bind(clip.widthProperty());
 
-        clips.add(clip);
-        effects.add(effect);
-
         try {
-            blockingQueue.put(wrapper);
+            Wallpaper wallpaper = new Wallpaper(
+                    wrapper,
+                    clip,
+                    effect
+            );
+            blockingQueue.put(wallpaper);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -169,8 +173,8 @@ public class Start extends Application {
     }
 
     private void selectNew(int newIndex, Duration animationDuration) {
-        Rectangle newClip = clips.get(newIndex);
-        ColorAdjust newEffect = effects.get(newIndex);
+        Rectangle newClip = wallpapers.get(newIndex).clip();
+        ColorAdjust newEffect = wallpapers.get(newIndex).effect();
 
         Timeline newAnim = new Timeline(
                 new KeyFrame(Duration.ZERO,
@@ -188,8 +192,8 @@ public class Start extends Application {
     }
 
     private void deselectOld() {
-        Rectangle oldClip = clips.get(selectedIndex);
-        ColorAdjust oldEffect = effects.get(selectedIndex);
+        Rectangle oldClip = wallpapers.get(selectedIndex).clip();
+        ColorAdjust oldEffect = wallpapers.get(selectedIndex).effect();
 
         Timeline oldAnim = new Timeline(
                 new KeyFrame(Duration.ZERO,
