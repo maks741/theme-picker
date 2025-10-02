@@ -129,19 +129,19 @@ public class Start extends Application {
     }
 
     private void loadWallpaper(Path path, BlockingQueue<Wallpaper> blockingQueue) {
-        ImageView iv = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
-        iv.setFitHeight(imageHeight);
-        iv.setPreserveRatio(true);
+        ImageView imageView = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
+        imageView.setFitHeight(imageHeight);
+        imageView.setFitWidth(imageWidth);
 
         Rectangle clip = new Rectangle(croppedImageWidth, imageHeight);
         clip.setX((imageWidth - croppedImageWidth) / 2.0);
-        iv.setClip(clip);
+        imageView.setClip(clip);
 
         ColorAdjust effect = new ColorAdjust();
         effect.setBrightness(-0.5);
-        iv.setEffect(effect);
+        imageView.setEffect(effect);
 
-        StackPane wrapper = new StackPane(iv);
+        StackPane wrapper = new StackPane(imageView);
         wrapper.minWidthProperty().bind(clip.widthProperty());
         wrapper.prefWidthProperty().bind(clip.widthProperty());
         wrapper.maxWidthProperty().bind(clip.widthProperty());
