@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.effect.ColorAdjust;
@@ -76,37 +77,47 @@ public class Start extends Application {
         hBox.setPrefHeight(screenHeight);
         hBox.setAlignment(Pos.CENTER);
 
-        List<Path> paths = new ArrayList<>();
-        try (Stream<Path> themeDirs = Files.list(Paths.get(System.getProperty("user.home"), ".config", "themes"))) {
-            themeDirs.map(themeDir -> themeDir.resolve("wallpaper"))
-                    .forEach(paths::add);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Task<List<StackPane>> loadWallpapersTask = new Task<>() {
+            @Override
+            protected List<StackPane> call() {
+                List<StackPane> wrappers = new ArrayList<>();
 
-        for (Path path : paths) {
-            ImageView iv = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
-            iv.setFitHeight(imageHeight);
-            iv.setPreserveRatio(true);
+                try (Stream<Path> themeDirs = Files.list(Paths.get(System.getProperty("user.home"), ".config", "themes"))) {
+                    themeDirs.map(themeDir -> themeDir.resolve("wallpaper"))
+                            .forEach(path -> {
+                                ImageView iv = new ImageView(new Image(path.toUri().toString(), 1280, 720, false, true, true));
+                                iv.setFitHeight(imageHeight);
+                                iv.setPreserveRatio(true);
 
-            Rectangle clip = new Rectangle(croppedImageWidth, imageHeight);
-            clip.setX((imageWidth - croppedImageWidth) / 2.0);
-            iv.setClip(clip);
+                                Rectangle clip = new Rectangle(croppedImageWidth, imageHeight);
+                                clip.setX((imageWidth - croppedImageWidth) / 2.0);
+                                iv.setClip(clip);
 
-            ColorAdjust effect = new ColorAdjust();
-            effect.setBrightness(-0.5);
-            iv.setEffect(effect);
+                                ColorAdjust effect = new ColorAdjust();
+                                effect.setBrightness(-0.5);
+                                iv.setEffect(effect);
 
-            StackPane wrapper = new StackPane(iv);
-            wrapper.minWidthProperty().bind(clip.widthProperty());
-            wrapper.prefWidthProperty().bind(clip.widthProperty());
-            wrapper.maxWidthProperty().bind(clip.widthProperty());
+                                StackPane wrapper = new StackPane(iv);
+                                wrapper.minWidthProperty().bind(clip.widthProperty());
+                                wrapper.prefWidthProperty().bind(clip.widthProperty());
+                                wrapper.maxWidthProperty().bind(clip.widthProperty());
 
-            clips.add(clip);
-            effects.add(effect);
+                                clips.add(clip);
+                                effects.add(effect);
+                                wrappers.add(wrapper);
+                            });
 
-            hBox.getChildren().add(wrapper);
-        }
+                    return wrappers;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        loadWallpapersTask.setOnSucceeded(e -> {
+            loadWallpapersTask.getValue().forEach(hBox.getChildren()::add);
+            instantSelectFirst();
+        });
+        new Thread(loadWallpapersTask).start();
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -123,8 +134,6 @@ public class Start extends Application {
                 case ESCAPE -> exit();
             }
         });
-
-        instantSelectFirst();
     }
 
     private void updateSelection(int newIndex) {
