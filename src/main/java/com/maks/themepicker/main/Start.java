@@ -66,16 +66,11 @@ public class Start extends Application {
                 Paths.get(System.getProperty("user.home"), ".config", "themes", "hyprland_kath", "wallpaper"),
                 Paths.get(System.getProperty("user.home"), ".config", "themes", "mountain", "wallpaper"),
         };
-        /*Path[] paths = {
-                Paths.get(System.getProperty("user.home"), ".config", "themes", "anime_girl", "wallpaper"),
-                Paths.get(System.getProperty("user.home"), ".config", "themes", "anime_girl", "wallpaper"),
-                Paths.get(System.getProperty("user.home"), ".config", "themes", "anime_girl", "wallpaper"),
-                Paths.get(System.getProperty("user.home"), ".config", "themes", "anime_girl", "wallpaper"),
-        };*/
 
         for (Path path : paths) {
             ImageView iv = new ImageView(new Image(path.toUri().toString()));
             iv.setFitHeight(imageHeight);
+            iv.setPreserveRatio(true);
 
             Rectangle clip = new Rectangle(croppedImageWidth, imageHeight);
             clip.setX((imageWidth - croppedImageWidth) / 2.0);
