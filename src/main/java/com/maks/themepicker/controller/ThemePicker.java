@@ -52,6 +52,8 @@ public class ThemePicker implements Initializable {
         while (!((wallpaper = wallpaperQueue.take()) instanceof NullWallpaper)) {
             wallpapers.add(wallpaper);
         }
+
+        wallpapers.postInit();
     }
 
     private void setTheme(String newTheme) {

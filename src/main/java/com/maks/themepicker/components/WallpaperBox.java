@@ -21,15 +21,17 @@ public class WallpaperBox extends HBox {
         setPrefHeight(Config.screenHeight());
     }
 
-    public void add(Wallpaper wallpaper) {
-        var children = getChildren();
-        boolean firstWallpaper = children.isEmpty();
+    public void postInit() {
+        instantSelectMiddleElement();
 
-        children.add(wallpaper);
-
-        if (firstWallpaper) {
-            instantSelectFirst();
+        boolean evenNumberOfWallpapers = count() % 2 == 0;
+        if (evenNumberOfWallpapers) {
+            setLayoutX(Config.croppedImageWidth() / 2.0);
         }
+    }
+
+    public void add(Wallpaper wallpaper) {
+        getChildren().add(wallpaper);
     }
 
     public void selectNext() {
@@ -49,8 +51,9 @@ public class WallpaperBox extends HBox {
         return get(selectedIndex);
     }
 
-    private void instantSelectFirst() {
-        selectNew(0, Duration.millis(1)).play();
+    private void instantSelectMiddleElement() {
+        selectedIndex = Math.ceilDiv(count(), 2) - 1;
+        selectNew(selectedIndex, Duration.millis(1)).play();
     }
 
     private void updateSelection(int newIndex) {
