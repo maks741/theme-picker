@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
 
 <?import com.maks.themepicker.components.BackgroundImageView?>
 <?import com.maks.themepicker.components.WallpaperBox?>
-<StackPane xmlns:fx="http://javafx.com/fxml"
+<Pane xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.maks.themepicker.controller.ThemePicker"
            fx:id="root">
     <BackgroundImageView />
     <WallpaperBox fx:id="wallpapers" spacing="10" alignment="CENTER" />
-</StackPane>
+</Pane>
