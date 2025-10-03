@@ -44,7 +44,7 @@ public class Config {
 
         Size wallpaperResolution = new Size(yamlConfig.wallpaper.resolution);
         wallpaperHeight = screenHeight * yamlConfig.wallpaper.height;
-        wallpaperWidth = wallpaperHeight * (16.0 / 9.0);
+        wallpaperWidth = wallpaperHeight * (wallpaperResolution.width / wallpaperResolution.height);
         wallpaperResolutionWidth = wallpaperResolution.width;
         wallpaperResolutionHeight = wallpaperResolution.height;
         unselectedWallpaperBrightness = yamlConfig.wallpaper.unselectedBrightness;
