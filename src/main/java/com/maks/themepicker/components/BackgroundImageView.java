@@ -9,13 +9,19 @@ import javafx.scene.image.ImageView;
 
 public class BackgroundImageView extends ImageView {
     public BackgroundImageView() {
-        super(new Image(ResourceUtils.currentWallpaperPath().toUri().toString(), 640, 360, false, true));
+        super(new Image(
+                ResourceUtils.currentWallpaperPath().toUri().toString(),
+                Config.backgroundResolutionWidth(),
+                Config.backgroundResolutionHeight(),
+                false,
+                true
+        ));
 
         setFitWidth(Config.screenWidth());
         setFitHeight(Config.screenHeight());
 
         ColorAdjust dim = new ColorAdjust();
-        dim.setBrightness(Config.dimmedBackgroundBrightness());
+        dim.setBrightness(Config.backgroundBrightness());
 
         GaussianBlur dimmedBlur = new GaussianBlur(Config.backgroundBlur());
         dimmedBlur.setInput(dim);

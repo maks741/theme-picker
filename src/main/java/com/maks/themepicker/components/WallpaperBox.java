@@ -30,7 +30,7 @@ public class WallpaperBox extends HBox {
         double layoutX = (Config.screenWidth() / 2.0) - (currentWidth() / 2.0);
         boolean evenNumberOfWallpapers = count() % 2 == 0;
         if (evenNumberOfWallpapers) {
-            layoutX += Config.croppedImageWidth() / 2.0;
+            layoutX += Config.unselectedClipWidth() / 2.0;
         }
 
         setLayoutX(layoutX);
@@ -64,8 +64,8 @@ public class WallpaperBox extends HBox {
         Rectangle newClip = wallpaper.clip();
         ColorAdjust newEffect = wallpaper.effect();
 
-        newClip.setWidth(Config.selectedImageWidth());
-        newClip.setX((Config.imageWidth() - Config.selectedImageWidth()) / 2.0);
+        newClip.setWidth(Config.selectedClipWidth());
+        newClip.setX((Config.wallpaperWidth() - Config.selectedClipWidth()) / 2.0);
         newEffect.setBrightness(0);
     }
 
@@ -90,8 +90,8 @@ public class WallpaperBox extends HBox {
                         new KeyValue(newEffect.brightnessProperty(), newEffect.getBrightness())
                 ),
                 new KeyFrame(Config.animationDuration(),
-                        new KeyValue(newClip.widthProperty(), Config.selectedImageWidth()),
-                        new KeyValue(newClip.xProperty(), (Config.imageWidth() - Config.selectedImageWidth()) / 2.0),
+                        new KeyValue(newClip.widthProperty(), Config.selectedClipWidth()),
+                        new KeyValue(newClip.xProperty(), (Config.wallpaperWidth() - Config.selectedClipWidth()) / 2.0),
                         new KeyValue(newEffect.brightnessProperty(), 0)
                 )
         );
@@ -109,8 +109,8 @@ public class WallpaperBox extends HBox {
                         new KeyValue(oldEffect.brightnessProperty(), oldEffect.getBrightness())
                 ),
                 new KeyFrame(Config.animationDuration(),
-                        new KeyValue(oldClip.widthProperty(), Config.croppedImageWidth()),
-                        new KeyValue(oldClip.xProperty(), (Config.imageWidth() - Config.croppedImageWidth()) / 2.0),
+                        new KeyValue(oldClip.widthProperty(), Config.unselectedClipWidth()),
+                        new KeyValue(oldClip.xProperty(), (Config.wallpaperWidth() - Config.unselectedClipWidth()) / 2.0),
                         new KeyValue(oldEffect.brightnessProperty(), -0.5)
                 )
         );
@@ -118,7 +118,7 @@ public class WallpaperBox extends HBox {
 
     private Timeline scrollTo(BiFunction<Double, Double, Double> function) {
         Duration duration = Config.animationDuration();
-        double shift = Config.croppedImageWidth() + getSpacing();
+        double shift = Config.unselectedClipWidth() + getSpacing();
         double layoutX = getLayoutX();
 
         return  new Timeline(
@@ -144,8 +144,8 @@ public class WallpaperBox extends HBox {
     private double currentWidth() {
         int wallpapers = count();
 
-        double unselectedWallpapersWidth = (wallpapers - 1) * Config.croppedImageWidth();
-        double allWallpapersWidth = unselectedWallpapersWidth + Config.selectedImageWidth();
+        double unselectedWallpapersWidth = (wallpapers - 1) * Config.unselectedClipWidth();
+        double allWallpapersWidth = unselectedWallpapersWidth + Config.selectedClipWidth();
         double totalSpacingWidth = (wallpapers - 1) * getSpacing();
 
         return allWallpapersWidth + totalSpacingWidth;

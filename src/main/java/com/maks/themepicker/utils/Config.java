@@ -1,30 +1,65 @@
 package com.maks.themepicker.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import javafx.stage.Screen;
 import javafx.util.Duration;
+
+import java.io.IOException;
 
 public class Config {
 
     private static final double screenWidth;
     private static final double screenHeight;
-    private static final double imageWidth;
-    private static final double imageHeight;
-    private static final double croppedImageWidth;
-    private static final double selectedImageWidth;
-    private static final Duration animationDuration = Duration.millis(100);
-    private static final double arcSize = 35;
-    private static final double dimmedWallpaperBrightness = -0.5;
-    private static final double dimmedBackgroundBrightness = -0.75;
-    private static final double backgroundBlur = 0;
+
+    private static final double wallpaperWidth;
+    private static final double wallpaperHeight;
+    private static final double wallpaperResolutionWidth;
+    private static final double wallpaperResolutionHeight;
+    private static final double unselectedWallpaperBrightness;
+
+    private static final double unselectedClipWidth;
+    private static final double selectedClipWidth;
+    private static final double clipArc;
+
+    private static final double backgroundResolutionWidth;
+    private static final double backgroundResolutionHeight;
+    private static final double backgroundBrightness;
+    private static final double backgroundBlur;
+
+    private static final Duration animationDuration;
 
     static {
+        var mapper = new ObjectMapper(new YAMLFactory());
+        YAMLConfig yamlConfig;
+        try {
+            yamlConfig = mapper.readValue(ResourceUtils.configFilePath().toFile(), YAMLConfig.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Screen screen = Screen.getPrimary();
         screenWidth = screen.getBounds().getWidth();
         screenHeight = screen.getBounds().getHeight();
-        imageHeight = screenHeight * 0.6;
-        imageWidth = imageHeight * (16.0 / 9.0);
-        croppedImageWidth = imageWidth * 0.2;
-        selectedImageWidth = imageWidth * 0.5;
+
+        Size wallpaperResolution = new Size(yamlConfig.wallpaper.resolution);
+        wallpaperHeight = screenHeight * yamlConfig.wallpaper.height;
+        wallpaperWidth = wallpaperHeight * (16.0 / 9.0);
+        wallpaperResolutionWidth = wallpaperResolution.width;
+        wallpaperResolutionHeight = wallpaperResolution.height;
+        unselectedWallpaperBrightness = yamlConfig.wallpaper.unselectedBrightness;
+
+        unselectedClipWidth = screenWidth * yamlConfig.clip.unselectedWidth;
+        selectedClipWidth = screenWidth * yamlConfig.clip.selectedWidth;
+        clipArc = yamlConfig.clip.arc;
+
+        Size backgroundResolution = new Size(yamlConfig.background.resolution);
+        backgroundResolutionWidth = backgroundResolution.width;
+        backgroundResolutionHeight = backgroundResolution.height;
+        backgroundBlur = yamlConfig.background.blur;
+        backgroundBrightness = yamlConfig.background.brightness;
+
+        animationDuration = Duration.millis(yamlConfig.animation.durationMillis);
     }
 
     public static double screenWidth() {
@@ -35,39 +70,97 @@ public class Config {
         return screenHeight;
     }
 
-    public static double imageWidth() {
-        return imageWidth;
+    public static double wallpaperWidth() {
+        return wallpaperWidth;
     }
 
-    public static double imageHeight() {
-        return imageHeight;
+    public static double wallpaperHeight() {
+        return wallpaperHeight;
     }
 
-    public static double croppedImageWidth() {
-        return croppedImageWidth;
+    public static double wallpaperResolutionWidth() {
+        return wallpaperResolutionWidth;
     }
 
-    public static double selectedImageWidth() {
-        return selectedImageWidth;
+    public static double wallpaperResolutionHeight() {
+        return wallpaperResolutionHeight;
+    }
+
+    public static double unselectedWallpaperBrightness() {
+        return unselectedWallpaperBrightness;
+    }
+
+    public static double unselectedClipWidth() {
+        return unselectedClipWidth;
+    }
+
+    public static double selectedClipWidth() {
+        return selectedClipWidth;
+    }
+
+    public static double clipArc() {
+        return clipArc;
+    }
+
+    public static double backgroundResolutionWidth() {
+        return backgroundResolutionWidth;
+    }
+
+    public static double backgroundResolutionHeight() {
+        return backgroundResolutionHeight;
+    }
+
+    public static double backgroundBrightness() {
+        return backgroundBrightness;
+    }
+
+    public static double backgroundBlur() {
+        return backgroundBlur;
     }
 
     public static Duration animationDuration() {
         return animationDuration;
     }
 
-    public static double arcSize() {
-        return arcSize;
+    private record YAMLConfig(
+            Wallpaper wallpaper,
+            Background background,
+            Clip clip,
+            Animation animation
+    ) {
     }
 
-    public static double dimmedWallpaperBrightness() {
-        return dimmedWallpaperBrightness;
-    }
+    private record Wallpaper(
+            String resolution,
+            double height,
+            double unselectedBrightness
+    ) {}
 
-    public static double dimmedBackgroundBrightness() {
-        return dimmedBackgroundBrightness;
-    }
+    private record Background(
+            String resolution,
+            double brightness,
+            double blur
+    ) {}
 
-    public static double backgroundBlur() {
-        return backgroundBlur;
+    private record Clip(
+            double unselectedWidth,
+            double selectedWidth,
+            int arc
+    ) {}
+
+    private record Animation(
+            int durationMillis
+    ) {}
+
+    private record Size(
+            double width,
+            double height
+    ) {
+        public Size(String s) {
+            this(
+                    Double.parseDouble(s.split("x")[0]),
+                    Double.parseDouble(s.split("x")[1])
+            );
+        }
     }
 }

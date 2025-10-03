@@ -14,7 +14,7 @@ public class Start extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/themepicker/theme-picker.fxml"));
 
         Scene scene = new Scene(fxmlLoader.load());
-        scene.setFill(Color.rgb(30, 30, 30, 0.3));
+        scene.setFill(Color.TRANSPARENT);
 
         stage.setTitle("theme-picker");
         stage.initStyle(StageStyle.TRANSPARENT);

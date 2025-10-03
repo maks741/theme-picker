@@ -14,6 +14,11 @@ public class ResourceUtils {
         return basePath().resolve(relativePath);
     }
 
+    public static Path configFilePath() {
+        Path relativePath = Paths.get("theme-picker", "config.yaml");
+        return basePath().resolve(relativePath);
+    }
+
     private static Path basePath() {
         return Paths.get(System.getProperty("user.home"), ".config");
     }

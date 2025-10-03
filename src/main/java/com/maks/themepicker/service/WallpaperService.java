@@ -46,17 +46,17 @@ public class WallpaperService {
 
     private void loadWallpaper(Path path, String themeName, BlockingQueue<Wallpaper> blockingQueue) {
         ImageView imageView = new ImageView(new WallpaperImage(path));
-        imageView.setFitHeight(Config.imageHeight());
-        imageView.setFitWidth(Config.imageWidth());
+        imageView.setFitHeight(Config.wallpaperHeight());
+        imageView.setFitWidth(Config.wallpaperWidth());
 
-        Rectangle clip = new Rectangle(Config.croppedImageWidth(), Config.imageHeight());
-        clip.setArcWidth(Config.arcSize());
-        clip.setArcHeight(Config.arcSize());
-        clip.setX((Config.imageWidth() - Config.croppedImageWidth()) / 2.0);
+        Rectangle clip = new Rectangle(Config.unselectedClipWidth(), Config.wallpaperHeight());
+        clip.setArcWidth(Config.clipArc());
+        clip.setArcHeight(Config.clipArc());
+        clip.setX((Config.wallpaperWidth() - Config.unselectedClipWidth()) / 2.0);
         imageView.setClip(clip);
 
         ColorAdjust effect = new ColorAdjust();
-        effect.setBrightness(Config.dimmedWallpaperBrightness());
+        effect.setBrightness(Config.unselectedWallpaperBrightness());
         imageView.setEffect(effect);
 
         Wallpaper wallpaper = new Wallpaper(imageView, themeName, clip, effect);
