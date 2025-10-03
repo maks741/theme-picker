@@ -50,6 +50,8 @@ public class WallpaperService {
         imageView.setFitWidth(Config.imageWidth());
 
         Rectangle clip = new Rectangle(Config.croppedImageWidth(), Config.imageHeight());
+        clip.setArcWidth(Config.arcSize());
+        clip.setArcHeight(Config.arcSize());
         clip.setX((Config.imageWidth() - Config.croppedImageWidth()) / 2.0);
         imageView.setClip(clip);
 
