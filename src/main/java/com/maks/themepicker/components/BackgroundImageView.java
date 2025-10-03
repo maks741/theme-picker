@@ -3,6 +3,7 @@ package com.maks.themepicker.components;
 import com.maks.themepicker.utils.Config;
 import com.maks.themepicker.utils.ResourceUtils;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -14,7 +15,11 @@ public class BackgroundImageView extends ImageView {
         setFitHeight(Config.screenHeight());
 
         ColorAdjust dim = new ColorAdjust();
-        dim.setBrightness(-0.75);
-        setEffect(dim);
+        dim.setBrightness(Config.dimmedBackgroundBrightness());
+
+        GaussianBlur dimmedBlur = new GaussianBlur(Config.backgroundBlur());
+        dimmedBlur.setInput(dim);
+
+        setEffect(dimmedBlur);
     }
 }

@@ -56,7 +56,7 @@ public class WallpaperService {
         imageView.setClip(clip);
 
         ColorAdjust effect = new ColorAdjust();
-        effect.setBrightness(-0.5);
+        effect.setBrightness(Config.dimmedWallpaperBrightness());
         imageView.setEffect(effect);
 
         Wallpaper wallpaper = new Wallpaper(imageView, themeName, clip, effect);

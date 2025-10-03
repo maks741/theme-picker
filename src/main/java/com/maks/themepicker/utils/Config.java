@@ -12,6 +12,10 @@ public class Config {
     private static final double croppedImageWidth;
     private static final double selectedImageWidth;
     private static final Duration animationDuration = Duration.millis(100);
+    private static final double arcSize = 35;
+    private static final double dimmedWallpaperBrightness = -0.5;
+    private static final double dimmedBackgroundBrightness = -0.75;
+    private static final double backgroundBlur = 0;
 
     static {
         Screen screen = Screen.getPrimary();
@@ -49,5 +53,21 @@ public class Config {
 
     public static Duration animationDuration() {
         return animationDuration;
+    }
+
+    public static double arcSize() {
+        return arcSize;
+    }
+
+    public static double dimmedWallpaperBrightness() {
+        return dimmedWallpaperBrightness;
+    }
+
+    public static double dimmedBackgroundBrightness() {
+        return dimmedBackgroundBrightness;
+    }
+
+    public static double backgroundBlur() {
+        return backgroundBlur;
     }
 }
