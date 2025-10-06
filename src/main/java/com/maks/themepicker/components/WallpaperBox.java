@@ -22,6 +22,7 @@ public class WallpaperBox extends HBox {
     public WallpaperBox() {
         setPrefWidth(Config.screenWidth());
         setPrefHeight(Config.screenHeight());
+        setSpacing(Config.spacing());
     }
 
     public void postInit() {

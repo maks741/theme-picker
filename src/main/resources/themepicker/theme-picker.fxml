@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.Pane?>
-
 <?import com.maks.themepicker.components.WallpaperBox?>
-<Pane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.maks.themepicker.controller.ThemePicker"
-           fx:id="root">
-    <WallpaperBox fx:id="wallpapers" spacing="10" />
-</Pane>
+
+<WallpaperBox
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.maks.themepicker.controller.ThemePicker"
+        fx:id="wallpapers"
+/>

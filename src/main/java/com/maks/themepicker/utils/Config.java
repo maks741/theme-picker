@@ -12,6 +12,8 @@ public class Config {
     private static final double screenWidth;
     private static final double screenHeight;
 
+    private static final double spacing;
+
     private static final double wallpaperWidth;
     private static final double wallpaperHeight;
     private static final double wallpaperResolutionWidth;
@@ -21,11 +23,6 @@ public class Config {
     private static final double unselectedClipWidth;
     private static final double selectedClipWidth;
     private static final double clipArc;
-
-    private static final double backgroundResolutionWidth;
-    private static final double backgroundResolutionHeight;
-    private static final double backgroundBrightness;
-    private static final double backgroundBlur;
 
     private static final Duration animationDuration;
 
@@ -42,6 +39,8 @@ public class Config {
         screenWidth = screen.getBounds().getWidth();
         screenHeight = screen.getBounds().getHeight();
 
+        spacing = yamlConfig.app.spacing;
+
         Size wallpaperResolution = new Size(yamlConfig.wallpaper.resolution);
         wallpaperHeight = screenHeight * yamlConfig.wallpaper.height;
         wallpaperWidth = wallpaperHeight * (wallpaperResolution.width / wallpaperResolution.height);
@@ -53,12 +52,6 @@ public class Config {
         selectedClipWidth = screenWidth * yamlConfig.clip.selectedWidth;
         clipArc = yamlConfig.clip.arc;
 
-        Size backgroundResolution = new Size(yamlConfig.background.resolution);
-        backgroundResolutionWidth = backgroundResolution.width;
-        backgroundResolutionHeight = backgroundResolution.height;
-        backgroundBlur = yamlConfig.background.blur;
-        backgroundBrightness = yamlConfig.background.brightness;
-
         animationDuration = Duration.millis(yamlConfig.animation.durationMillis);
     }
 
@@ -68,6 +61,10 @@ public class Config {
 
     public static double screenHeight() {
         return screenHeight;
+    }
+
+    public static double spacing() {
+        return spacing;
     }
 
     public static double wallpaperWidth() {
@@ -102,44 +99,26 @@ public class Config {
         return clipArc;
     }
 
-    public static double backgroundResolutionWidth() {
-        return backgroundResolutionWidth;
-    }
-
-    public static double backgroundResolutionHeight() {
-        return backgroundResolutionHeight;
-    }
-
-    public static double backgroundBrightness() {
-        return backgroundBrightness;
-    }
-
-    public static double backgroundBlur() {
-        return backgroundBlur;
-    }
-
     public static Duration animationDuration() {
         return animationDuration;
     }
 
     private record YAMLConfig(
+            App app,
             Wallpaper wallpaper,
-            Background background,
             Clip clip,
             Animation animation
     ) {
     }
 
+    private record App(
+            double spacing
+    ) {}
+
     private record Wallpaper(
             String resolution,
             double height,
             double unselectedBrightness
-    ) {}
-
-    private record Background(
-            String resolution,
-            double brightness,
-            double blur
     ) {}
 
     private record Clip(

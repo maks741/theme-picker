@@ -6,7 +6,6 @@ import com.maks.themepicker.model.Wallpaper;
 import com.maks.themepicker.service.WallpaperService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -16,14 +15,11 @@ import java.util.concurrent.BlockingQueue;
 public class ThemePicker implements Initializable {
 
     @FXML
-    private Pane root;
-
-    @FXML
     private WallpaperBox wallpapers;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        root.sceneProperty().addListener((o, v, scene) ->
+        wallpapers.sceneProperty().addListener((o, v, scene) ->
             scene.setOnKeyPressed(e -> {
                 switch (e.getCode()) {
                     case RIGHT -> wallpapers.selectNext();
