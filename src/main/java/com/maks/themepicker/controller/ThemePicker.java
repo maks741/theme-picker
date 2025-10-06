@@ -28,7 +28,6 @@ public class ThemePicker implements Initializable {
                         setTheme(wallpapers.selected().theme());
                         exit();
                     }
-                    case ESCAPE -> exit();
                 }
             })
         );
