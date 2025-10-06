@@ -11,6 +11,8 @@ public class Start extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        long start = System.currentTimeMillis();
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/themepicker/theme-picker.fxml"));
 
         Scene scene = new Scene(fxmlLoader.load());
@@ -22,5 +24,7 @@ public class Start extends Application {
         stage.setX(0);
         stage.setY(0);
         stage.show();
+
+        System.out.println("STARTED IN: " + (System.currentTimeMillis() - start));
     }
 }
