@@ -9,11 +9,6 @@ public class ResourceUtils {
         return basePath().resolve("themes");
     }
 
-    public static Path currentWallpaperPath() {
-        Path relativePath = Paths.get("wallpapers", "current");
-        return basePath().resolve(relativePath);
-    }
-
     public static Path configFilePath() {
         Path relativePath = Paths.get("theme-picker", "config.yaml");
         return basePath().resolve(relativePath);

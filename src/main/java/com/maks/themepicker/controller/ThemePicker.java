@@ -19,7 +19,7 @@ public class ThemePicker implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        wallpapers.sceneProperty().addListener((o, v, scene) ->
+        wallpapers.sceneProperty().addListener((_, _, scene) ->
             scene.setOnKeyPressed(e -> {
                 switch (e.getCode()) {
                     case RIGHT -> wallpapers.selectNext();
