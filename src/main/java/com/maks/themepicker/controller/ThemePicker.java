@@ -52,7 +52,7 @@ public class ThemePicker implements Initializable {
     }
 
     private void setTheme(String newTheme) {
-        String command = "sleep 0.5 && set-theme " + newTheme;
+        String command = "set-theme " + newTheme;
         ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
         processBuilder.environment().putAll(System.getenv());
 
