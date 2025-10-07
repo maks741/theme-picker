@@ -19,6 +19,7 @@ public class Config {
     private static final double wallpaperResolutionWidth;
     private static final double wallpaperResolutionHeight;
     private static final double unselectedWallpaperBrightness;
+    private static final String selectedWallpaperBorderColor;
 
     private static final double unselectedClipWidth;
     private static final double selectedClipWidth;
@@ -47,6 +48,7 @@ public class Config {
         wallpaperResolutionWidth = wallpaperResolution.width;
         wallpaperResolutionHeight = wallpaperResolution.height;
         unselectedWallpaperBrightness = yamlConfig.wallpaper.unselectedBrightness;
+        selectedWallpaperBorderColor = yamlConfig.wallpaper.selectedBorderColor;
 
         unselectedClipWidth = screenWidth * yamlConfig.clip.unselectedWidth;
         selectedClipWidth = screenWidth * yamlConfig.clip.selectedWidth;
@@ -87,6 +89,10 @@ public class Config {
         return unselectedWallpaperBrightness;
     }
 
+    public static String selectedWallpaperBorderColor() {
+        return selectedWallpaperBorderColor;
+    }
+
     public static double unselectedClipWidth() {
         return unselectedClipWidth;
     }
@@ -118,7 +124,8 @@ public class Config {
     private record Wallpaper(
             String resolution,
             double height,
-            double unselectedBrightness
+            double unselectedBrightness,
+            String selectedBorderColor
     ) {}
 
     private record Clip(

@@ -64,6 +64,7 @@ public class WallpaperBox extends HBox {
         Wallpaper wallpaper = get(selectedIndex);
         Rectangle newClip = wallpaper.clip();
         ColorAdjust newEffect = wallpaper.effect();
+        wallpaper.setSelectedBorderColor();
 
         newClip.setWidth(Config.selectedClipWidth());
         newClip.setX((Config.wallpaperWidth() - Config.selectedClipWidth()) / 2.0);
@@ -83,6 +84,7 @@ public class WallpaperBox extends HBox {
         Wallpaper wallpaper = get(newIndex);
         Rectangle newClip = wallpaper.clip();
         ColorAdjust newEffect = wallpaper.effect();
+        wallpaper.setSelectedBorderColor();
 
         return new Timeline(
                 new KeyFrame(Duration.ZERO,
@@ -102,6 +104,7 @@ public class WallpaperBox extends HBox {
         Wallpaper wallpaper = selected();
         Rectangle oldClip = wallpaper.clip();
         ColorAdjust oldEffect = wallpaper.effect();
+        wallpaper.setDefaultBorderColor();
 
         return new Timeline(
                 new KeyFrame(Duration.ZERO,
