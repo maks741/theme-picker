@@ -3,6 +3,7 @@ package com.maks.themepicker.components;
 import com.maks.themepicker.model.Wallpaper;
 import com.maks.themepicker.utils.Config;
 import com.maks.themepicker.utils.MathUtils;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
@@ -19,6 +20,7 @@ import java.util.function.BiFunction;
 public class WallpaperBox extends HBox {
 
     private int selectedIndex = 0;
+    private boolean animationPlaying = false;
 
     public WallpaperBox() {
         setPrefWidth(Config.screenWidth());
@@ -44,6 +46,10 @@ public class WallpaperBox extends HBox {
     }
 
     public void selectNext() {
+        if (animationPlaying) {
+            return;
+        }
+
         int wallpapersCount = count();
         if (selectedIndex < (wallpapersCount - 1)) {
             updateSelection(selectedIndex + 1, scrollTo(MathUtils::subtract));
@@ -51,6 +57,10 @@ public class WallpaperBox extends HBox {
     }
 
     public void selectPrevious() {
+        if (animationPlaying) {
+            return;
+        }
+
         if (selectedIndex > 0) {
             updateSelection(selectedIndex - 1, scrollTo(MathUtils::add));
         }
@@ -79,7 +89,13 @@ public class WallpaperBox extends HBox {
         Timeline deselectOld = deselectOld();
         Timeline selectNew = selectNew(newIndex);
 
-        new ParallelTransition(deselectOld, selectNew, scroll).play();
+        var transition = new ParallelTransition(deselectOld, selectNew, scroll);
+
+        transition.statusProperty().addListener((_, _, status) ->
+            animationPlaying = status == Animation.Status.RUNNING
+        );
+
+        transition.play();
 
         selectedIndex = newIndex;
     }
