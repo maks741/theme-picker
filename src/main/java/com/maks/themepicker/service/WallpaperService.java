@@ -63,6 +63,8 @@ public class WallpaperService {
         Wallpaper wallpaper = new Wallpaper(imageView, themeName, clip, effect);
         wallpaper.minWidthProperty().bind(clip.widthProperty());
         wallpaper.maxWidthProperty().bind(clip.widthProperty());
+        wallpaper.minHeightProperty().bind(clip.heightProperty());
+        wallpaper.maxHeightProperty().bind(clip.heightProperty());
 
         try {
             blockingQueue.put(wallpaper);

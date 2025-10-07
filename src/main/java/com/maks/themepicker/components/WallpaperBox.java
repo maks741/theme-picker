@@ -7,6 +7,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.HBox;
@@ -23,6 +24,7 @@ public class WallpaperBox extends HBox {
         setPrefWidth(Config.screenWidth());
         setPrefHeight(Config.screenHeight());
         setSpacing(Config.spacing());
+        setAlignment(Pos.CENTER_LEFT);
     }
 
     public void postInit() {
@@ -86,15 +88,9 @@ public class WallpaperBox extends HBox {
         Wallpaper wallpaper = get(newIndex);
         Rectangle newClip = wallpaper.clip();
         ColorAdjust newEffect = wallpaper.effect();
+        wallpaper.setSelectedBorderColor();
 
-        var timeline = new Timeline(
-                new KeyFrame(Duration.ZERO,
-                        new KeyValue(newClip.widthProperty(), newClip.getWidth()),
-                        new KeyValue(newClip.heightProperty(), newClip.getHeight()),
-                        new KeyValue(newClip.xProperty(), newClip.getX()),
-                        new KeyValue(newClip.yProperty(), newClip.getY()),
-                        new KeyValue(newEffect.brightnessProperty(), newEffect.getBrightness())
-                ),
+        return new Timeline(
                 new KeyFrame(Config.animationDuration(),
                         new KeyValue(newClip.widthProperty(), Config.selectedClipWidth()),
                         new KeyValue(newClip.heightProperty(), Config.selectedClipHeight()),
@@ -103,10 +99,6 @@ public class WallpaperBox extends HBox {
                         new KeyValue(newEffect.brightnessProperty(), 0)
                 )
         );
-
-        timeline.setOnFinished((_) -> wallpaper.setSelectedBorderColor());
-
-        return timeline;
     }
 
     private Timeline deselectOld() {
@@ -116,13 +108,6 @@ public class WallpaperBox extends HBox {
         wallpaper.setDefaultBorderColor();
 
         return new Timeline(
-                new KeyFrame(Duration.ZERO,
-                        new KeyValue(oldClip.widthProperty(), oldClip.getWidth()),
-                        new KeyValue(oldClip.heightProperty(), oldClip.getHeight()),
-                        new KeyValue(oldClip.xProperty(), oldClip.getX()),
-                        new KeyValue(oldClip.yProperty(), oldClip.getY()),
-                        new KeyValue(oldEffect.brightnessProperty(), oldEffect.getBrightness())
-                ),
                 new KeyFrame(Config.animationDuration(),
                         new KeyValue(oldClip.widthProperty(), Config.unselectedClipWidth()),
                         new KeyValue(oldClip.heightProperty(), Config.unselectedClipHeight()),

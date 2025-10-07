@@ -20,7 +20,7 @@ public class Wallpaper extends StackPane {
         this.effect = effect;
 
         border.prefWidthProperty().bind(widthProperty());
-        border.setMaxHeight(Config.wallpaperHeight());
+        border.prefHeightProperty().bind(heightProperty());
         getChildren().add(border);
     }
 
