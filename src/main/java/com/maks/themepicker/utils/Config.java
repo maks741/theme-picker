@@ -23,6 +23,8 @@ public class Config {
 
     private static final double unselectedClipWidth;
     private static final double selectedClipWidth;
+    private static final double unselectedClipHeight;
+    private static final double selectedClipHeight;
     private static final double clipArc;
 
     private static final Duration animationDuration;
@@ -43,7 +45,7 @@ public class Config {
         spacing = yamlConfig.app.spacing;
 
         Size wallpaperResolution = new Size(yamlConfig.wallpaper.resolution);
-        wallpaperHeight = screenHeight * yamlConfig.wallpaper.height;
+        wallpaperHeight = screenHeight * yamlConfig.clip.selectedHeight;
         wallpaperWidth = wallpaperHeight * (wallpaperResolution.width / wallpaperResolution.height);
         wallpaperResolutionWidth = wallpaperResolution.width;
         wallpaperResolutionHeight = wallpaperResolution.height;
@@ -52,6 +54,8 @@ public class Config {
 
         unselectedClipWidth = screenWidth * yamlConfig.clip.unselectedWidth;
         selectedClipWidth = screenWidth * yamlConfig.clip.selectedWidth;
+        unselectedClipHeight = screenHeight * yamlConfig.clip.unselectedHeight;
+        selectedClipHeight = screenHeight * yamlConfig.clip.selectedHeight;
         clipArc = yamlConfig.clip.arc;
 
         animationDuration = Duration.millis(yamlConfig.animation.durationMillis);
@@ -101,6 +105,14 @@ public class Config {
         return selectedClipWidth;
     }
 
+    public static double unselectedClipHeight() {
+        return unselectedClipHeight;
+    }
+
+    public static double selectedClipHeight() {
+        return selectedClipHeight;
+    }
+
     public static double clipArc() {
         return clipArc;
     }
@@ -123,7 +135,6 @@ public class Config {
 
     private record Wallpaper(
             String resolution,
-            double height,
             double unselectedBrightness,
             String selectedBorderColor
     ) {}
@@ -131,6 +142,8 @@ public class Config {
     private record Clip(
             double unselectedWidth,
             double selectedWidth,
+            double unselectedHeight,
+            double selectedHeight,
             int arc
     ) {}
 

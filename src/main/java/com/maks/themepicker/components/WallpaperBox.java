@@ -67,7 +67,9 @@ public class WallpaperBox extends HBox {
         wallpaper.setSelectedBorderColor();
 
         newClip.setWidth(Config.selectedClipWidth());
+        newClip.setHeight(Config.selectedClipHeight());
         newClip.setX((Config.wallpaperWidth() - Config.selectedClipWidth()) / 2.0);
+        newClip.setY((Config.wallpaperHeight() - Config.selectedClipHeight()) / 2.0);
         newEffect.setBrightness(0);
     }
 
@@ -84,20 +86,27 @@ public class WallpaperBox extends HBox {
         Wallpaper wallpaper = get(newIndex);
         Rectangle newClip = wallpaper.clip();
         ColorAdjust newEffect = wallpaper.effect();
-        wallpaper.setSelectedBorderColor();
 
-        return new Timeline(
+        var timeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(newClip.widthProperty(), newClip.getWidth()),
+                        new KeyValue(newClip.heightProperty(), newClip.getHeight()),
                         new KeyValue(newClip.xProperty(), newClip.getX()),
+                        new KeyValue(newClip.yProperty(), newClip.getY()),
                         new KeyValue(newEffect.brightnessProperty(), newEffect.getBrightness())
                 ),
                 new KeyFrame(Config.animationDuration(),
                         new KeyValue(newClip.widthProperty(), Config.selectedClipWidth()),
+                        new KeyValue(newClip.heightProperty(), Config.selectedClipHeight()),
                         new KeyValue(newClip.xProperty(), (Config.wallpaperWidth() - Config.selectedClipWidth()) / 2.0),
+                        new KeyValue(newClip.yProperty(), (Config.wallpaperHeight() - Config.selectedClipHeight()) / 2.0),
                         new KeyValue(newEffect.brightnessProperty(), 0)
                 )
         );
+
+        timeline.setOnFinished((_) -> wallpaper.setSelectedBorderColor());
+
+        return timeline;
     }
 
     private Timeline deselectOld() {
@@ -109,12 +118,16 @@ public class WallpaperBox extends HBox {
         return new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(oldClip.widthProperty(), oldClip.getWidth()),
+                        new KeyValue(oldClip.heightProperty(), oldClip.getHeight()),
                         new KeyValue(oldClip.xProperty(), oldClip.getX()),
+                        new KeyValue(oldClip.yProperty(), oldClip.getY()),
                         new KeyValue(oldEffect.brightnessProperty(), oldEffect.getBrightness())
                 ),
                 new KeyFrame(Config.animationDuration(),
                         new KeyValue(oldClip.widthProperty(), Config.unselectedClipWidth()),
+                        new KeyValue(oldClip.heightProperty(), Config.unselectedClipHeight()),
                         new KeyValue(oldClip.xProperty(), (Config.wallpaperWidth() - Config.unselectedClipWidth()) / 2.0),
+                        new KeyValue(oldClip.yProperty(), (Config.wallpaperHeight() - Config.unselectedClipHeight()) / 2.0),
                         new KeyValue(oldEffect.brightnessProperty(), -0.5)
                 )
         );

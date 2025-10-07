@@ -49,10 +49,11 @@ public class WallpaperService {
         imageView.setFitHeight(Config.wallpaperHeight());
         imageView.setFitWidth(Config.wallpaperWidth());
 
-        Rectangle clip = new Rectangle(Config.unselectedClipWidth(), Config.wallpaperHeight());
+        Rectangle clip = new Rectangle(Config.unselectedClipWidth(), Config.unselectedClipHeight());
         clip.setArcWidth(Config.clipArc());
         clip.setArcHeight(Config.clipArc());
         clip.setX((Config.wallpaperWidth() - Config.unselectedClipWidth()) / 2.0);
+        clip.setY((Config.wallpaperHeight() - Config.unselectedClipHeight()) / 2.0);
         imageView.setClip(clip);
 
         ColorAdjust effect = new ColorAdjust();
